@@ -1,3 +1,5 @@
 /cert.pem
 /csr.pem
 /key.pem
+/node_modules
+/database.json
