@@ -57,7 +57,7 @@
             margin-right: 20px;
         }
         .add-button {
-            margin-top: 10px;
+            margin: -6px -6px -6px -6px;
         }
         .add-button button {
             padding: 10px 20px;
@@ -66,6 +66,21 @@
             color: white;
             border: none;
             cursor: pointer;
+            width: 100%;
+        }
+        table{
+            display: none;
+        }
+        .visible{
+            display: table;
+        }
+        input{
+            width: calc(100% - 8px);
+            border: none;
+            background-color: #f2f2f2;
+            padding: 10px;
+            margin: -6px;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -73,13 +88,13 @@
     <h1>Database Schema Visualization</h1>
 
     <div class="nav-bar">
-        <button id="brukereBtn" class="active" onclick="showTable('brukereTable')">Brukere</button>
+        <!-- <button id="brukereBtn" class="active" onclick="showTable('brukereTable')">Brukere</button>
         <button id="prosjektTypeBtn" onclick="showTable('prosjektTypeTable')">ProsjektType</button>
-        <button id="prosjekterBtn" onclick="showTable('prosjekterTable')">Prosjekter</button>
+        <button id="prosjekterBtn" onclick="showTable('prosjekterTable')">Prosjekter</button> -->
     </div>
 
     <div class="table-container">
-        <table id="brukereTable" style="display: table;">
+        <!-- <table id="brukereTable" style="display: table;">
             <caption>Brukere</caption>
             <thead>
                 <tr>
@@ -93,9 +108,9 @@
             <tbody>
               
             </tbody>
-        </table>
+        </table> -->
 
-        <table id="prosjektTypeTable" style="display: none;">
+        <!-- <table id="prosjektTypeTable" style="display: none;">
             <caption>ProsjektType</caption>
             <thead>
                 <tr>
@@ -123,11 +138,11 @@
                
             </tbody>
         </table>
-    </div>
+    </div> -->
 
-    <div class="add-button">
+    <!-- <div class="add-button">
         <button>Add</button>
-    </div>
+    </div> -->
 
     <script src="./javascript/script.js"></script>
   

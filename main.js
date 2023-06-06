@@ -3,7 +3,7 @@ const fs = require('fs');
 const express = require('express');
 const sql = require('mysql');
 const { request } = require('http');
-const port = 4028;
+const port = 4029;
 const app = express();
 
 const { connect } = require('http2');
@@ -14,6 +14,8 @@ const { listenerCount } = require('process');
 //     user: "brukernavn",
 //     password: "passord"
 // }
+
+
 
 databaseCreds = fs.readFileSync("database.json", "utf-8");
 
@@ -75,6 +77,11 @@ function convert(info, data){
     }
     return all;
 }
+
+app.get('/Databases', (req, res) => {
+    dataBases = {names: ["Brukere", "Prosjekter", "Prosjekt Typer"]};
+    res.send(dataBases);
+});
 
 app.get('/Personer', (req, res) => {
     info = {
@@ -151,5 +158,69 @@ app.get('/ProsjektType', (req, res) => {
         }
     });
 })
+
+app.get('/All', (req, res) => {
+    var dataBases = {names: ["Brukere", "Prosjekter", "Prosjekt Type"], data: []};
+    var brukere = {
+        Names: 
+        ["Id",
+        "Bruker Navn",
+        "Navn",
+        "E-Post",
+        "Telefon"],
+        dataValues:
+        ["Id",
+            "BrukerNavn",
+            "Navn",
+            "EPost",
+            "Telefon"],
+        data: []
+    }
+    var prosjekter = {
+        Names: 
+        ["Id",
+        "Navn",
+        "Type",
+        "Beskrivelse",
+        "Tilhører"],
+        dataValues:
+        ["Id",
+        "Navn",
+        "ProsjektType",
+        "Beskrivelse",
+        "Owner"],
+        data: []
+    }
+    var prosjektTyper = {
+        Names: 
+        ["Id",
+        "Navn"],
+        dataValues:
+        ["Id",
+        "Navn"],
+        data: []
+    }
+    
+
+    // dataValues: ["BrukerNavn",
+    //     "Navn",
+    //     "EPost",
+    //     "Telefon"]
+    connection.query("SELECT * FROM Projects.ProsjektType;", (error, resultsProsjektType) => {
+        connection.query("SELECT * FROM Projects.Brukere;", (error, resultsBrukere) => {
+            connection.query("SELECT * FROM Projects.Prosjekter;", (error, resultsProsjekter) => {
+                prosjektTyper.data = convert(prosjektTyper, resultsProsjektType);
+                prosjekter.data = convert(prosjekter, resultsProsjekter);
+                brukere.data = convert(brukere, resultsBrukere);
+
+                dataBases.data.push(brukere);
+                dataBases.data.push(prosjekter);
+                dataBases.data.push(prosjektTyper);
+
+                res.send(dataBases);
+            });
+        });
+    });
+});
 
 //INSERT INTO `Projects`.`Brukere` (`BrukerNavn`, `Navn`, `E-Post`, `Telefon`) VALUES ('tbryne', 'tollak', 'tollak@something.com', '84027450');
