@@ -5,11 +5,131 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/style.css">
-    <title>Document</title>
-    
+    <title>Database Schema Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        caption {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .nav-bar {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .nav-bar button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            font-size: 16px;
+            background-color: #f2f2f2;
+            border: none;
+            cursor: pointer;
+        }
+        .nav-bar button.active {
+            background-color: #ccc;
+        }
+        .table-container {
+            display: flex;
+            align-items: flex-start;
+            margin-top: 10px;
+        }
+        .table-container table {
+            flex: 1;
+            margin-right: 20px;
+        }
+        .add-button {
+            margin-top: 10px;
+        }
+        .add-button button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
-<body style="background-color: #222222;">
-    <div style="height: 300px; width: 200px;"></div>
+<body>
+    <h1>Database Schema Visualization</h1>
+
+    <div class="nav-bar">
+        <button id="brukereBtn" class="active" onclick="showTable('brukereTable')">Brukere</button>
+        <button id="prosjektTypeBtn" onclick="showTable('prosjektTypeTable')">ProsjektType</button>
+        <button id="prosjekterBtn" onclick="showTable('prosjekterTable')">Prosjekter</button>
+    </div>
+
+    <div class="table-container">
+        <table id="brukereTable" style="display: table;">
+            <caption>Brukere</caption>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>EPost</th>
+                    <th>BrukerNavn</th>
+                    <th>Navn</th>
+                    <th>Telefon</th>
+                </tr>
+            </thead>
+            <tbody>
+              
+            </tbody>
+        </table>
+
+        <table id="prosjektTypeTable" style="display: none;">
+            <caption>ProsjektType</caption>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Navn</th>
+                </tr>
+            </thead>
+            <tbody>
+             
+            </tbody>
+        </table>
+
+        <table id="prosjekterTable" style="display: none;">
+            <caption>Prosjekter</caption>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Navn</th>
+                    <th>ProsjektType</th>
+                    <th>Beskrivelse</th>
+                    <th>Owner</th>
+                </tr>
+            </thead>
+            <tbody>
+               
+            </tbody>
+        </table>
+    </div>
+
+    <div class="add-button">
+        <button>Add</button>
+    </div>
+
+    <script src="./javascript/script.js"></script>
+  
 </body>
-<script src="./javascript/script.js"></script>
 </html>

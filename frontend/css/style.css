@@ -1,9 +1,33 @@
 
-
-.backGround{
-    background-color: red !important;
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
 }
 
-/* *{
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-} */
+.table-container {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+  }
+  
+  .table-container table {
+    flex: 1;
+  }
+  
+  .add-button {
+    margin-left: auto;
+    margin-top: 10px;
+  }
+  
+  
+
+.add-button button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
