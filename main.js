@@ -47,7 +47,22 @@ app.get('/javascript/script.js', (req, res) => {
     res.send(fs.readFileSync("frontend/javascript/script.js", "utf-8"));
 })
 
-
+app.post('/create', (req, res) =>{
+    // INSERT INTO `Projects`.`Brukere` (`BrukerNavn`, `Navn`, `E-Post`, `Telefon`) VALUES ('tbryne', 'tollak', 'tollak@something.com', '84027450');
+    var start = "INSERT INTO `Projects`.`" + req.body.database + "` (";
+    for(let i = 0; i < req.body.types.length; i++){
+        start += "`" + req.body.types[i] +"`"
+        if(i != req.body.types.length - 1) start += ", ";
+    }
+    start += ") VALUES (";
+    for(let i = 0; i < req.body.data.length; i++){
+        start += "'" + req.body.data[i] +"'"
+        if(i != req.body.data.length - 1) start += ", ";
+    }
+    start += ");"
+    connection.query(start)
+    res.send();
+})
 
 function convert(info, data){
     all = [];
@@ -127,8 +142,13 @@ app.get('/ProsjektType', (req, res) => {
         Data: []
     }
     connection.query("SELECT * FROM Projects.ProsjektType;", (error, results) => {
-        value.Data = convert(info, results)
-        res.send(value);
+        if(results){
+            value.Data = convert(info, results)
+            res.send(value);
+        }
+        else{
+            res.send({no: "no"})
+        }
     });
 })
 
