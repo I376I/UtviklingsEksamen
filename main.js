@@ -66,6 +66,13 @@ app.post('/create', (req, res) =>{
     res.send();
 })
 
+app.post('/delete', (req, res) =>{
+    // DELETE FROM `Projects`.`Brukere` WHERE (`Id` = '1');
+    var start = "DELETE FROM `Projects`.`" + req.body.database + "` WHERE (`Id` = '" + req.body.id + "');"
+    connection.query(start)
+    res.send();
+})
+
 function convert(info, data){
     all = [];
     for(let i = 0; i < data.length; i++){
