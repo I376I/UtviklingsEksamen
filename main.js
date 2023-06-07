@@ -9,25 +9,25 @@ const app = express();
 const { connect } = require('http2');
 const { listenerCount } = require('process');
 
+// hvordan du skal strukturere json fil med database inloging
 // {
 //     host: "hostnavn",
 //     user: "brukernavn",
 //     password: "passord"
 // }
-
-
-
 databaseCreds = fs.readFileSync("database.json", "utf-8");
 
 const connection = sql.createConnection(JSON.parse(databaseCreds));
 
 connection.connect();
 
+//bruk json, lar deg få ut body av request
 app.use(express.json());
 
-const privateKey = fs.readFileSync("key.pem", "utf-8");
-const certificate = fs.readFileSync("cert.pem", "utf-8");
-creds = {key: privateKey, cert: certificate}
+// mulighet for https
+// const privateKey = fs.readFileSync("key.pem", "utf-8");
+// const certificate = fs.readFileSync("cert.pem", "utf-8");
+// creds = {key: privateKey, cert: certificate}
 
 // https.createServer({creds}, app).listen(port, () =>{
 //     console.log("server running on port " + port);
@@ -49,6 +49,7 @@ app.get('/javascript/script.js', (req, res) => {
     res.send(fs.readFileSync("frontend/javascript/script.js", "utf-8"));
 })
 
+//lager nye rader i tabellene
 app.post('/create', (req, res) =>{
     // INSERT INTO `Projects`.`Brukere` (`BrukerNavn`, `Navn`, `E-Post`, `Telefon`) VALUES ('tbryne', 'tollak', 'tollak@something.com', '84027450');
     var start = "INSERT INTO `Projects`.`" + req.body.database + "` (";
@@ -62,10 +63,17 @@ app.post('/create', (req, res) =>{
         if(i != req.body.data.length - 1) start += ", ";
     }
     start += ");"
-    connection.query(start)
-    res.send();
+    connection.query(start, (err, result) => {
+        if(err){
+            res.send({ code:400, failed: "error occurred"});
+        }
+        else{
+            res.send();
+        }
+    })
 })
 
+//sletter ved hjelp av id og databasenavn
 app.post('/delete', (req, res) =>{
     // DELETE FROM `Projects`.`Brukere` WHERE (`Id` = '1');
     var start = "DELETE FROM `Projects`.`" + req.body.database + "` WHERE (`Id` = '" + req.body.id + "');"
@@ -73,11 +81,12 @@ app.post('/delete', (req, res) =>{
     res.send();
 })
 
+//converterer til enkel liste som kan bli satt inne i meldingen, sortert etter info
 function convert(info, data){
     all = [];
-    for(let i = 0; i < data.length; i++){
+    for(let i = 0; i < data.length; i++){ //looper over alle radene den får
         var DataPack = [];
-        for(let j = 0; j < info.dataValues.length; j++){
+        for(let j = 0; j < info.dataValues.length; j++){ //looper over de forskjellige navnene og setter dei inn
             DataPack.push(data[i][info.dataValues[j]]);
         }
         all.push(DataPack);
@@ -85,89 +94,10 @@ function convert(info, data){
     return all;
 }
 
-app.get('/Databases', (req, res) => {
-    dataBases = {names: ["Brukere", "Prosjekter", "Prosjekt Typer"]};
-    res.send(dataBases);
-});
-
-app.get('/Personer', (req, res) => {
-    info = {
-        dataValues: ["BrukerNavn",
-        "Navn",
-        "EPost",
-        "Telefon"]
-    }
-    value = {
-        Names: ["Bruker Navn",
-        "Navn",
-        "E-Post",
-        "Telefon"],
-        Types: [1, 1, 1, 2],
-        Data: []
-    }
-    connection.query("SELECT * FROM Projects.Brukere;", (error, results) => {
-        value.Data = convert(info, results)
-        res.send(value);
-    });
-})
-
-app.get('/Prosjekter', (req, res) => {
-    info = {
-        dataValues: ["Navn",
-        "ProsjektType",
-        "Beskrivelse",
-        "Owner"]
-    }
-    value = {
-        Names: ["Navn",
-        "Type",
-        "Beskrivelse",
-        "Tilhører"],
-        Types: [1, 1, 1, 2],
-        Data: []
-    }
-    connection.query("SELECT * FROM Projects.Prosjekter;", (error, results) => {
-        value.Data = convert(info, results)
-        connection.query("SELECT * FROM Projects.Brukere;", (error, resultsBrukere) => {
-            connection.query("SELECT * FROM Projects.ProsjektType;", (error, resultsProsjektType) => {
-                for(let i = 0; i < value.Data.length; i++){
-                    for(let j = 0; j < resultsBrukere.length; j++){
-                        if(resultsBrukere[j].Id == value.Data[i][3]) value.Data[i][3] = resultsBrukere[j].BrukerNavn;
-                        break;
-                    }
-                    for(let j = 0; j < resultsProsjektType.length; j++){
-                        if(resultsProsjektType[j].Id == value.Data[i][1]) value.Data[i][1] = resultsProsjektType[j].Navn;
-                        break;
-                    }      
-                }
-                res.send(value);
-            })
-        })
-    });
-})
-
-app.get('/ProsjektType', (req, res) => {
-    info = {
-        dataValues: ["Navn"]
-    }
-    value = {
-        Names: ["Navn"],
-        Types: [1],
-        Data: []
-    }
-    connection.query("SELECT * FROM Projects.ProsjektType;", (error, results) => {
-        if(results){
-            value.Data = convert(info, results)
-            res.send(value);
-        }
-        else{
-            res.send({no: "no"})
-        }
-    });
-})
-
+//sender tabelnavna, tabelene med navn på verdier, hva dataverdi navnene det er inne i databasen og verdiene
 app.get('/All', (req, res) => {
     var dataBases = {names: ["Brukere", "Prosjekter", "Prosjekt Type"], data: []};
+    //beskriver de forskjellige tabelene
     var brukere = {
         Names: 
         ["Id",
@@ -177,10 +107,10 @@ app.get('/All', (req, res) => {
         "Telefon"],
         dataValues:
         ["Id",
-            "BrukerNavn",
-            "Navn",
-            "EPost",
-            "Telefon"],
+        "BrukerNavn",
+        "Navn",
+        "EPost",
+        "Telefon"],
         data: []
     }
     var prosjekter = {
@@ -207,12 +137,7 @@ app.get('/All', (req, res) => {
         "Navn"],
         data: []
     }
-    
-
-    // dataValues: ["BrukerNavn",
-    //     "Navn",
-    //     "EPost",
-    //     "Telefon"]
+    //går gjennom hver tabell
     connection.query("SELECT * FROM Projects.ProsjektType;", (error, resultsProsjektType) => {
         connection.query("SELECT * FROM Projects.Brukere;", (error, resultsBrukere) => {
             connection.query("SELECT * FROM Projects.Prosjekter;", (error, resultsProsjekter) => {
@@ -229,5 +154,3 @@ app.get('/All', (req, res) => {
         });
     });
 });
-
-//INSERT INTO `Projects`.`Brukere` (`BrukerNavn`, `Navn`, `E-Post`, `Telefon`) VALUES ('tbryne', 'tollak', 'tollak@something.com', '84027450');
